@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HEAT RP - Загрузка</title>
+    <style>
+        /* Базовые настройки и шрифты */
+        @import url('https://fonts.googleapis.com/css2?family=Jura:wght@400;700&display=swap');
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #050505;
+            color: #fff;
+            font-family: 'Jura', sans-serif;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* Фоновое изображение (замени URL на свою картинку или гифку из Сталкера) */
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://i.imgur.com/UAa90GU.jpeg'); /* Временный сталкерский фон */
+            background-size: cover;
+            background-position: center;
+            filter: brightness(0.4) contrast(1.2);
+            z-index: 1;
+        }
+
+        /* Виньетка для мрачности */
+        .vignette {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            box-shadow: 0 0 200px rgba(0,0,0,0.9) inset;
+            z-index: 2;
+        }
+
+        /* Основной контейнер контента */
+        .content {
+            position: absolute;
+            z-index: 3;
+            bottom: 10%;
+            left: 5%;
+            width: 90%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Логотип / Название */
+        h1 {
+            margin: 0;
+            font-size: 4rem;
+            color: #ff8c00; /* Наш оранжевый цвет */
+            text-shadow: 2px 2px 0px #000, 0 0 20px rgba(255, 140, 0, 0.5);
+            letter-spacing: 5px;
+        }
+
+        /* Информационный текст (карта, слот и тд) */
+        .server-info {
+            font-size: 1.2rem;
+            color: #ccc;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        /* Текущий статус загрузки файлов */
+        #status-text {
+            font-size: 1rem;
+            color: #888;
+            font-style: italic;
+        }
+
+        /* Контейнер полоски загрузки */
+        .progress-container {
+            width: 100%;
+            max-width: 600px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0,0,0,0.8);
+        }
+
+        /* Сама бегущая полоска */
+        .progress-bar {
+            width: 30%; /* Будет бегать туда-сюда */
+            height: 100%;
+            background: #ff8c00;
+            position: absolute;
+            left: -30%;
+            animation: loadingAnim 2s infinite ease-in-out;
+            box-shadow: 0 0 10px #ff8c00;
+        }
+
+        @keyframes loadingAnim {
+            0% { left: -30%; }
+            100% { left: 100%; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="background"></div>
+    <div class="vignette"></div>
+
+    <audio id="bgm" autoplay loop>
+        <source src="bgm.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="content">
+        <h1>HEAT PROJECT</h1>
+        <div class="server-info" id="server-info">Подключение к Зоне Отчуждения...</div>
+        <div class="progress-container">
+            <div class="progress-bar"></div>
+        </div>
+        <div id="status-text">Ожидание данных от сервера...</div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var audio = document.getElementById("bgm");
+            audio.volume = 0.09; // Громкость 10%
+            
+            // Пытаемся запустить сразу
+            var playPromise = audio.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.log("Браузер заблокировал автоплей. Ждем клика пользователя...");
+                    // Если браузер заблокировал, запускаем при первом клике в любое место экрана
+                    document.body.addEventListener('click', function() {
+                        if (audio.paused) {
+                            audio.play();
+                        }
+                    }, { once: true }); // once: true значит, что сработает только 1 раз
+                });
+            }
+        });
+
+        // Эти функции GMod вызывает автоматически во время загрузки!
+        
+        // Получение инфы о сервере
+        function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode) {
+            document.getElementById('server-info').innerText = "Карта: " + mapname + " | Слоты: " + maxplayers;
+        }
+
+        // Обновление статуса (например, "Sending client info...")
+        function SetStatusChanged(status) {
+            document.getElementById('status-text').innerText = status;
+        }
+
+        // Показ файла, который качается прямо сейчас
+        function DownloadingFile(fileName) {
+            document.getElementById('status-text').innerText = "Загрузка: " + fileName;
+        }
+    </script>
+
+</body>
+</html>
