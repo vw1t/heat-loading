@@ -114,7 +114,7 @@
     <div class="vignette"></div>
 
     <audio id="bgm" autoplay loop>
-        <source src="bgm.mp3" type="audio/mpeg">
+        <source src="bgm.mp3?v=2" type="audio/mpeg">
     </audio>
 
     <div class="content">
@@ -137,7 +137,6 @@
             if (playPromise !== undefined) {
                 playPromise.catch(error => {
                     console.log("Браузер заблокировал автоплей. Ждем клика пользователя...");
-                    // Если браузер заблокировал, запускаем при первом клике в любое место экрана
                     document.body.addEventListener('click', function() {
                         if (audio.paused) {
                             audio.play();
@@ -147,7 +146,7 @@
             }
         });
 
-        // Эти функции GMod вызывает автоматически во время загрузки!
+       
         
         // Получение инфы о сервере
         function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode) {
